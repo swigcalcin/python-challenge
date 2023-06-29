@@ -1,0 +1,58 @@
+import csv
+import os
+
+budget_reader = os.path.join("PyBank", "Resources", "budget_data.csv")
+total_months = 0
+total_net = 0
+net_change_list = []
+month_of_change = []
+greatest_increase = ["",0]
+greatest_decrease = ["",999999999999999]
+
+ 
+with open(budget_reader) as budget_info:
+    reader = csv.reader(budget_info)
+    header = next(reader)
+    first_row = next(reader)
+    prev_net = int(first_row[1])
+    total_months +=1
+    total_net += int(first_row[1])
+    previous_net = int(first_row[1])
+    for row in reader:
+        total_months +=1
+        total_net += int(row[1])
+        
+        # Track the net change
+        net_change = int(row[1]) - prev_net
+        prev_net = int(row[1])
+        net_change_list += [net_change]
+        month_of_change += [row[0]]
+        
+        # Calculate the greatest increase
+        if net_change > greatest_increase[1]:
+            greatest_increase[0] = row[0]
+            greatest_increase[1] = net_change
+
+        if net_change < greatest_decrease[1]:
+            greatest_decrease[0] = row[0]
+            greatest_decrease[1] = net_change 
+            
+    average_net_change = sum(net_change_list)/len(net_change_list)
+    average_net_change = round(average_net_change, 2)
+    
+    
+    print(f"Total Months : {total_months}")
+    print(f"Total : {total_net}")
+    print(f"Average Change : $ {average_net_change}")
+    print(f"Greatest increase in profits : {greatest_increase}")
+    print(f"Greatest decrease in profits : {greatest_decrease}")
+    
+    output_path = os.path.join('PyBank', 'analysis', 'analysis.txt')
+    
+    with open(output_path, "w") as result:    
+        result.write(f"Total Months : {total_months}\n")
+        result.write(f"Total : {total_net}\n")
+        result.write(f"Average Change : $ {average_net_change}\n")
+        result.write(f"Greatest increase in profits : {greatest_increase}\n")
+        result.write(f"Greatest decrease in profits : {greatest_decrease}\n")
+    
